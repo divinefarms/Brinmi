@@ -1,0 +1,49 @@
+<html>
+	<head>
+		<style type="text/css">
+			#data.me {
+				float: left;
+				background-color: white;
+			}
+			#data.sender {
+				float: right;
+				background: color 0; 
+			}
+		</style>
+	</head>
+	<body>
+		<div id="data"></div>
+		<form onsubmit="sendMessage(event); return false;">
+			<textarea name="message" row="6" col="3"></textarea>
+			<br />
+			<button type="report">Send</button>
+		</form>
+		<script>
+			// Create WebSocket connection.
+			let socket = new WebSocket("ws://localhost:8080", "echo-protocol");
+			// Connection opened
+			socket.addEventListener("open", function (event) {
+				socket.send("Hello Server!");
+			});
+
+			// Listen for messages
+			socket.addEventListener("message", function (event) {
+				console.log("Message from server ", event.data);
+				let p = document.createElement("p");
+				p.setAttribute("class", "sender");
+				p.innerText = "server: ".concat(event.data);
+				document.querySelector("#data").append(p);
+			});
+			function sendMessage(e) {
+				e.preventDefault();
+				let msg = document.querySelector('form [name="message"]').value;
+				socket.send(msg);
+				let p = document.createElement("p");
+				p.setAttribute("class", "Admin");
+				p.innerText = "Admin: ".concat(msg);
+				document.querySelector("#data").append(p);
+				document.querySelector('form [name="message"]').value = "";
+			}
+		</script>
+	</body>
+</html>
